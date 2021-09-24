@@ -1,5 +1,5 @@
 import "./App.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
 import "prismjs/components/prism-clike";
@@ -9,18 +9,22 @@ import "prismjs/themes/prism.css"; //Example style, you can use another
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
 import { FiChevronRight } from "react-icons/fi";
+import Loader from "./components/Loader";
 
 function App() {
   const [code, setCode] = useState(`function add(a, b) {\n  return a + b;\n}`);
   const [res, setRes] = useState("(1)");
+  const [loading, setLoading] = useState(false);
   const OpenAI = require("openai-api");
   const openai = new OpenAI(process.env.REACT_APP_API_KEY);
-  function domImage() {
+  function onSubmit() {
     console.log(code);
+
     getTime(code);
   }
 
   async function getTime(code) {
+    setLoading(true);
     await openai
       .complete({
         engine: "davinci",
@@ -44,10 +48,12 @@ function App() {
         } else {
           setRes("Error");
         }
+        setLoading(false);
         // setRes(response.data.choices[0].text);
       })
       .catch((error) => {
         console.log(error);
+        setLoading(false);
       });
 
     // console.log(gptResponse.data);
@@ -83,7 +89,12 @@ function App() {
           </div>
           <div className="editor-bg"></div>
         </div>
-        <button className="btn flex-row" onClick={domImage}>
+        <button
+          type="button"
+          className="btn flex-row"
+          onClick={onSubmit}
+          disabled={loading}
+        >
           Use AI to evaluate your code{" "}
           <FiChevronRight style={{ marginLeft: "10px" }} />
         </button>
@@ -96,8 +107,14 @@ function App() {
             <p>Output </p>
           </div> */}
           <div className="output">
-            <p>Output: </p>
-            <h2>The time complexity is O{res} </h2>
+            {loading ? (
+              <Loader />
+            ) : (
+              <div>
+                <p>Output: </p>
+                <h2>The time complexity is O{res} </h2>
+              </div>
+            )}
           </div>
         </div>
       </div>
