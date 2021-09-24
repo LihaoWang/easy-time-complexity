@@ -6,6 +6,9 @@ import "prismjs/components/prism-clike";
 import "prismjs/components/prism-javascript";
 import "prismjs/components/prism-python";
 import "prismjs/themes/prism.css"; //Example style, you can use another
+import Nav from "./components/Nav";
+import Footer from "./components/Footer";
+import { FiChevronRight } from "react-icons/fi";
 
 function App() {
   const [code, setCode] = useState(`function add(a, b) {\n  return a + b;\n}`);
@@ -16,6 +19,7 @@ function App() {
     console.log(code);
     getTime(code);
   }
+
   async function getTime(code) {
     await openai
       .complete({
@@ -51,32 +55,53 @@ function App() {
   }
 
   return (
-    <div className="App flex-col">
+    <div className="App">
+      <Nav />
       <div className="main">
-        <h1 className="">Easy Time Complexity </h1>
-        <div className="editor-wrapper">
-          <div className="editor-buttons">
-            <div className="editor-button"></div>
-            <div className="editor-button"></div>
-            <div className="editor-button"></div>
-          </div>
-
-          <Editor
-            className="editor"
-            value={code}
-            onValueChange={(code) => setCode(code)}
-            highlight={(code) => highlight(code, languages.clike)}
-            padding={20}
-          />
+        <h1 style={{ marginBottom: "10px" }}>Time Complexity,</h1>
+        <div className="typewriter">
+          <h1 style={{ marginTop: "0px" }} className="typewriter-text">
+            Simplified
+          </h1>
         </div>
 
-        <button className="btn" onClick={domImage}>
-          Calculate
+        <div className="editor-bg-wrapper">
+          <div className="editor-wrapper">
+            <div className="editor-buttons">
+              <div className="editor-button"></div>
+              <div className="editor-button"></div>
+              <div className="editor-button"></div>
+            </div>
+
+            <Editor
+              className="editor"
+              value={code}
+              onValueChange={(code) => setCode(code)}
+              highlight={(code) => highlight(code, languages.clike)}
+              padding={20}
+            />
+          </div>
+          <div className="editor-bg"></div>
+        </div>
+        <button className="btn flex-row" onClick={domImage}>
+          Use AI to evaluate your code{" "}
+          <FiChevronRight style={{ marginLeft: "10px" }} />
         </button>
-        <h2>The time complexity is O{res} </h2>
-        <p>Powered By</p>
-        <img width="150px" src="openAI.svg" alt="openAI Logo" />
+        <div className="open-ai flex-row">
+          <p>Powered By</p>
+          <img src="openAI.svg" alt="openAI Logo" />
+        </div>
+        <div className="output-wrapper">
+          {/* <div className="output-header">
+            <p>Output </p>
+          </div> */}
+          <div className="output">
+            <p>Output: </p>
+            <h2>The time complexity is O{res} </h2>
+          </div>
+        </div>
       </div>
+      <Footer />
     </div>
   );
 }
