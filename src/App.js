@@ -1,26 +1,31 @@
 import "./App.css";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
 import "prismjs/components/prism-clike";
 import "prismjs/components/prism-javascript";
-import "prismjs/components/prism-python";
-import "prismjs/themes/prism.css"; //Example style, you can use another
+import "prismjs/themes/prism.css";
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
 import { FiChevronRight } from "react-icons/fi";
 import Loader from "./components/Loader";
 
 function App() {
-  const [code, setCode] = useState(`function add(a, b) {\n  return a + b;\n}`);
-  const [res, setRes] = useState("(1)");
+  const [code, setCode] = useState(`def loop(n):
+  for i in range(n):
+    print(i)`);
+  const [res, setRes] = useState("(n)");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
   const OpenAI = require("openai-api");
   const openai = new OpenAI(process.env.REACT_APP_API_KEY);
   function onSubmit() {
-    console.log(code);
-
-    getTime(code);
+    if (code.length > 800) {
+      setError(true);
+    } else {
+      setError(false);
+      getTime(code);
+    }
   }
 
   async function getTime(code) {
@@ -28,7 +33,10 @@ function App() {
     await openai
       .complete({
         engine: "davinci",
-        prompt: code + "The time complexity of this function is O",
+        prompt:
+          code +
+          `
+        The time complexity of this function is O`,
         maxTokens: 5,
         temperature: 0,
         topP: 1,
@@ -40,16 +48,17 @@ function App() {
         stop: ["\n", "testing"],
       })
       .then((response) => {
-        let res = response.data.choices[0].text;
-        let start = res.indexOf("(");
-        let end = res.indexOf(")");
-        if (start !== -1 && end !== -1) {
-          setRes(res.slice(start, end + 1));
-        } else {
-          setRes("Error");
-        }
+        // let res = response.data.choices[0].text;
+        // let start = res.indexOf("(");
+        // let end = res.indexOf(")");
+        // if (start !== -1 && end !== -1) {
+        //   setRes(res.slice(start, end + 1));
+        // } else {
+        //   setRes("Error");
+        // }
+
+        setRes(response.data.choices[0].text);
         setLoading(false);
-        // setRes(response.data.choices[0].text);
       })
       .catch((error) => {
         console.log(error);
@@ -98,6 +107,13 @@ function App() {
           Use AI to evaluate your code{" "}
           <FiChevronRight style={{ marginLeft: "10px" }} />
         </button>
+        {error && (
+          <span style={{ color: "red" }}>
+            In order to prevent spam, the input length is limited to 1000
+            characters. Sorry for the inconvenience.
+          </span>
+        )}
+
         <div className="open-ai flex-row">
           <p>Powered By</p>
           <img src="openAI.svg" alt="openAI Logo" />
@@ -116,6 +132,14 @@ function App() {
               </div>
             )}
           </div>
+        </div>
+        <div>
+          <p className="disclaimer">
+            <span role="img" aria-label="warning">
+              🔴
+            </span>
+            The result is for reference purpose only
+          </p>
         </div>
       </div>
       <Footer />

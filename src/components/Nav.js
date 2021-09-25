@@ -8,7 +8,7 @@ function Nav() {
         <h1>Easy Time Complexity</h1>
       </div>
       <button className="nav-btn">
-        <a href="https://www.leowang.codes/">Donate</a>
+        <a href="https://buymeacoffee.com/leowang">Donate</a>
       </button>
     </div>
   );
