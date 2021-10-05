@@ -9,6 +9,7 @@ import Nav from "./components/Nav";
 import Footer from "./components/Footer";
 import { FiChevronRight } from "react-icons/fi";
 import Loader from "./components/Loader";
+import { motion } from "framer-motion";
 
 function App() {
   const [code, setCode] = useState(`def loop(n):
@@ -79,25 +80,34 @@ function App() {
             Simplified
           </h1>
         </div>
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: { opacity: 0 },
+            visible: { opacity: 1 },
+          }}
+        >
+          <div className="editor-bg-wrapper">
+            <div className="editor-wrapper">
+              <div className="editor-buttons">
+                <div className="editor-button"></div>
+                <div className="editor-button"></div>
+                <div className="editor-button"></div>
+              </div>
 
-        <div className="editor-bg-wrapper">
-          <div className="editor-wrapper">
-            <div className="editor-buttons">
-              <div className="editor-button"></div>
-              <div className="editor-button"></div>
-              <div className="editor-button"></div>
+              <Editor
+                className="editor"
+                value={code}
+                onValueChange={(code) => setCode(code)}
+                highlight={(code) => highlight(code, languages.clike)}
+                padding={20}
+              />
             </div>
 
-            <Editor
-              className="editor"
-              value={code}
-              onValueChange={(code) => setCode(code)}
-              highlight={(code) => highlight(code, languages.clike)}
-              padding={20}
-            />
+            <div className="editor-bg"></div>
           </div>
-          <div className="editor-bg"></div>
-        </div>
+        </motion.div>
         <button
           type="button"
           className="btn flex-row"
